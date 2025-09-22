@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://haven-1-inpg.onrender.com/api/$1"
+    },
+    {
+      "source": "/((?!.*\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|json|txt|woff2?|ttf|eot)).*)",
+      "destination": "/index.html"
+    }
+  ]
+}
