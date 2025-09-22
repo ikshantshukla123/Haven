@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api';
+const API_URL = 'https://haven-2-ep9x.onrender.com';
 
 const api = axios.create({
   baseURL: API_URL,
