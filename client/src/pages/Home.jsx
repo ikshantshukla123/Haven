@@ -112,6 +112,7 @@ const Home = () => {
               <motion.img
                 src={`/photos/${photo}`}
                 alt={`Photo ${index + 1}`}
+                loading="lazy"
                 className="w-full h-74 object-cover transform group-hover:scale-110 transition-transform duration-500"
                 whileHover={{ rotate: -2 }}
               />

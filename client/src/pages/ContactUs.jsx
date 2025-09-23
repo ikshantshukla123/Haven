@@ -195,7 +195,7 @@ const ContactUs = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-pink-500 focus:border-pink-500"
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 971-7150-055"
                     />
                   </div>
                   
@@ -253,50 +253,7 @@ const ContactUs = () => {
   );
 };
 
-const PortfolioPopup = () => {
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <button
-        onClick={() => setOpen(true)}
-        className="fixed z-50 bottom-6 right-6 w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-700 text-white rounded-full shadow-lg flex items-center justify-center hover:scale-110 transition-transform duration-300 border-4 border-white/60"
-        title="View Portfolio"
-        aria-label="View Portfolio"
-      >
-        <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 11c0-1.657 1.343-3 3-3s3 1.343 3 3-1.343 3-3 3-3-1.343-3-3zm0 0c0-1.657-1.343-3-3-3s-3 1.343-3 3 1.343 3 3 3 3-1.343 3-3zm0 0v2m0 4h.01"/></svg>
-      </button>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-xs w-full relative animate-fade-in">
-            <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-pink-600 text-2xl font-bold"
-              onClick={() => setOpen(false)}
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            <h2 className="text-xl font-bold text-pink-600 mb-4 text-center stylish-font">My Portfolio</h2>
-            <a
-              href="https://my-portfolio-347j.vercel.app/" 
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-pink-500 text-white text-center px-6 py-3 rounded-lg font-semibold shadow hover:bg-pink-700 transition-colors duration-200"
-            >
-              Visit 
-            </a>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
 
-const ContactUsWithPortfolio = () => (
-  <>
-    <ContactUs />
-    <PortfolioPopup />
-  </>
-);
 
-export default ContactUsWithPortfolio;
+export default ContactUs;
 
