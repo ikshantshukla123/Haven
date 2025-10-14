@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, useMotionValue, useTransform, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const photos = [
@@ -17,18 +17,42 @@ const photos = [
   "twelve.jpeg",
 ];
 
-
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 60 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: {
+      duration: 0.8,
+      ease: [0.25, 0.1, 0.25, 1]
+    }
+  },
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15
+    }
+  }
 };
 
 const Home = () => {
-
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const rotateX = useTransform(y, [-200, 200], [15, -15]);
-  const rotateY = useTransform(x, [-200, 200], [-15, 15]);
+  const rotateX = useTransform(y, [-200, 200], [8, -8]);
+  const rotateY = useTransform(x, [-200, 200], [-8, 8]);
+
+  // Auto-slide hero images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % 3); // Cycle through first 3 images
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -39,167 +63,389 @@ const Home = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [x, y]);
 
+  const heroImages = ["/photos/six.jpeg", "/photos/one.jpeg", "/photos/two.jpeg"];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-white to-rose-200 relative overflow-hidden">
-     
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-orange-50 relative overflow-hidden">
+      {/* Animated Background Elements */}
       <motion.div
-        className="pointer-events-none fixed w-64 h-64 rounded-full bg-pink-400/30 blur-3xl"
+        className="pointer-events-none fixed w-80 h-80 rounded-full bg-pink-400/20 blur-3xl"
         style={{ x, y }}
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      
+      <motion.div
+        className="pointer-events-none fixed w-96 h-96 rounded-full bg-rose-300/15 blur-3xl -bottom-48 -left-48"
+        animate={{
+          x: [0, 100, 0],
+          y: [0, -50, 0],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
       />
 
-    
-      <section className="relative h-[80vh] flex items-center justify-center overflow-hidden">
-        <motion.img
-          src="/photos/six.jpeg"
-          alt="Hero"
-          initial={{ scale: 1.2, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1 }}
-          style={{ rotateX, rotateY }}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
+      {/* Hero Section */}
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0">
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={currentImageIndex}
+              src={heroImages[currentImageIndex]}
+              alt="Hero"
+              initial={{ opacity: 0, scale: 1.1 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              transition={{ duration: 1.2 }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          </AnimatePresence>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-black/40 backdrop-blur-[1px]"></div>
+        </div>
 
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={fadeUp}
-          transition={{ duration: 1 }}
-          className="relative z-10 text-center text-white"
+          variants={staggerContainer}
+          className="relative z-10 text-center text-white px-4 max-w-6xl mx-auto"
         >
-          <h1 className="text-5xl md:text-7xl font-extrabold drop-shadow-xl">
-            Welcome to Hamper Heaven
-          </h1>
-          <p className="mt-6 text-lg md:text-2xl text-gray-200 drop-shadow">
-            A world of elegance, memories, and style.
-          </p> 
-          <Link to="/products">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="mt-8 px-8 py-3 bg-pink-600 text-white rounded-full font-semibold shadow-lg hover:bg-pink-700 transition-colors"
+          <motion.div
+            variants={fadeUp}
+            className="inline-block mb-6"
           >
-            Explore Now
-          </motion.button>
-          </Link>
+            <span className="px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full text-sm font-semibold border border-white/30">
+              🎀 Premium Gift Hampers
+            </span>
+          </motion.div>
+          
+          <motion.h1 
+            variants={fadeUp}
+            className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight"
+          >
+            <span className="bg-gradient-to-r from-white to-rose-100 bg-clip-text text-transparent">
+              Hamper
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-rose-100 to-pink-200 bg-clip-text text-transparent">
+              Heaven
+            </span>
+          </motion.h1>
+          
+          <motion.p 
+            variants={fadeUp}
+            className="text-xl md:text-2xl text-rose-100 mb-8 max-w-3xl mx-auto leading-relaxed font-light"
+          >
+            Where every gift tells a story of elegance, love, and unforgettable moments
+          </motion.p>
+          
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link to="/products" className="w-full sm:w-auto">
+              <motion.button
+                whileHover={{ 
+                  scale: 1.05,
+                  boxShadow: "0 20px 40px rgba(219, 39, 119, 0.3)"
+                }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full px-12 py-4 bg-gradient-to-r from-pink-500 to-rose-600 text-white rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
+              >
+                🎁 Explore Collection
+              </motion.button>
+            </Link>
+            <Link to="/about" className="w-full sm:w-auto">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto px-8 py-4 bg-white/20 backdrop-blur-sm text-white border border-white/30 rounded-2xl font-semibold hover:bg-white/30 transition-all duration-300"
+            >
+              Learn More
+            </motion.button>
+            </Link>
+          </motion.div>
+        </motion.div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 2 }}
+          className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
+        >
+          <motion.div
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center"
+          >
+            <motion.div
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="w-1 h-3 bg-white/70 rounded-full mt-2"
+            />
+          </motion.div>
         </motion.div>
       </section>
 
-
-      <section className="max-w-7xl mx-auto px-4 py-20">
-        <motion.h2
-          initial="hidden"
-          whileInView="visible"
-          variants={fadeUp}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold text-center text-gray-800 mb-12"
-        >
-          Our Beautiful Collection
-        </motion.h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-          {photos.map((photo, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9, y: 30 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: index * 0.1 }}
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              className="relative rounded-2xl overflow-hidden shadow-lg bg-white/30 backdrop-blur-md border border-white/20 hover:shadow-2xl transition-all group"
+      {/* Gallery Section */}
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-rose-50/30 to-transparent"></div>
+        
+        <div className="max-w-8xl mx-auto px-4 relative z-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            variants={staggerContainer}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-20"
+          >
+            <motion.span 
+              variants={fadeUp}
+              className="text-pink-500 font-semibold text-lg mb-4 block"
             >
-              <motion.img
-                src={`/photos/${photo}`}
-                alt={`Photo ${index + 1}`}
-                loading="lazy"
-                className="w-full h-74 object-cover transform group-hover:scale-110 transition-transform duration-500"
-                whileHover={{ rotate: -2 }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div className="absolute bottom-4 left-4 text-white opacity-0 group-hover:opacity-100 transition-opacity">
-                <p className="font-semibold text-lg">Get Yours</p>
-              </div>
-            </motion.div>
-          ))}
+              Our Masterpieces
+            </motion.span>
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl md:text-6xl font-black text-gray-900 mb-6"
+            >
+              Visual <span className="text-transparent bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text">Elegance</span>
+            </motion.h2>
+            <motion.p
+              variants={fadeUp}
+              className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+            >
+              Discover our carefully crafted hampers, each designed to create lasting memories and bring joy to your special moments
+            </motion.p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {photos.map((photo, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 60, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: index * 0.1,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
+                whileHover={{ 
+                  y: -12,
+                  scale: 1.02,
+                  transition: { duration: 0.3 }
+                }}
+                className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-white to-rose-50 shadow-xl hover:shadow-2xl border border-white/50 backdrop-blur-sm"
+              >
+                <div className="relative overflow-hidden">
+                  <motion.img
+                    src={`/photos/${photo}`}
+                    alt={`Luxury Hamper ${index + 1}`}
+                    loading="lazy"
+                    className="w-full h-80 object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    whileHover={{ scale: 1.1 }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+                  
+                 
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileHover={{ opacity: 1, y: 0 }}
+                    className="absolute bottom-6 left-6 right-6 text-white opacity-0 group-hover:opacity-100 transition-all duration-500"
+                  >
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <p className="font-bold text-lg mb-1">Luxury Collection</p>
+                        <p className="text-rose-200 text-sm">Starting from ₹50</p>
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                      >
+                        <span className="text-lg">→</span>
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-
-      <section className="bg-gradient-to-br from-rose-50 to-pink-100 py-20">
-        <motion.h2
-          initial="hidden"
-          whileInView="visible"
-          variants={fadeUp}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold text-center text-gray-800 stylish-font mb-12"
-        >
-          What We Offer
-        </motion.h2>
-
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-6">
-          {[
-            { icon: "🎁", title: "Quality Hampers", desc: "Hand-curated premium hampers for every occasion." },
-            { icon: "💝", title: "Elegant Packaging", desc: "Beautiful presentation to make every gift special." },
-            { icon: "🚚", title: "Reliable Delivery", desc: "On-time delivery ensuring safe and perfect condition." },
-          ].map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 50, scale: 0.9 }}
-              whileInView={{ opacity: 1, y: 0, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              whileHover={{ y: -10, scale: 1.05 }}
-              className="bg-white rounded-xl shadow-lg p-8 text-center hover:shadow-2xl transition-all"
+      {/* Features Section */}
+      <section className="relative py-24 bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white to-transparent"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            variants={staggerContainer}
+            viewport={{ once: true }}
+            className="text-center mb-20"
+          >
+            <motion.h2
+              variants={fadeUp}
+              className="text-4xl md:text-6xl font-black text-gray-900 mb-6"
             >
-              <div className="w-16 h-16 bg-pink-200 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                {item.icon}
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-gray-600">{item.desc}</p>
-            </motion.div>
-          ))}
+              Why Choose <span className="text-transparent bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text">Us?</span>
+            </motion.h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { 
+                icon: "🎁", 
+                title: "Premium Quality", 
+                desc: "Hand-curated with the finest products, ensuring excellence in every detail",
+                features: ["Premium Materials", "Handcrafted", "Quality Assured"]
+              },
+              { 
+                icon: "💝", 
+                title: "Elegant Packaging", 
+                desc: "Stunning presentation that turns every gift into an unforgettable experience",
+                features: ["Luxury Wrapping", "Custom Designs", "Eco-friendly"]
+              },
+              { 
+                icon: "🚚", 
+                title: "Seamless Delivery", 
+                desc: "Reliable nationwide delivery with care and attention to every package",
+                features: ["Fast Shipping", "Safe Delivery", "Tracking Available"]
+              },
+            ].map((item, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 60 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: index * 0.2 }}
+                whileHover={{ y: -15, scale: 1.02 }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-white to-rose-100 rounded-3xl shadow-xl group-hover:shadow-2xl transition-all duration-500 transform group-hover:rotate-1"></div>
+                <div className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/50 h-full transform group-hover:-rotate-1 transition-transform duration-500">
+                  <motion.div 
+                    className="w-20 h-20 bg-gradient-to-br from-pink-400 to-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl shadow-lg"
+                    whileHover={{ 
+                      scale: 1.1,
+                      rotate: [0, -5, 5, 0],
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {item.icon}
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600 text-center mb-6 leading-relaxed">
+                    {item.desc}
+                  </p>
+                  <ul className="space-y-2">
+                    {item.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center text-sm text-gray-500">
+                        <span className="w-2 h-2 bg-pink-400 rounded-full mr-3"></span>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-     
-      <section className="py-20 bg-pink-600 text-center text-white">
-        <motion.h2
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-3xl md:text-4xl font-bold mb-6"
-        >
-          Ready to Gift Happiness?
-        </motion.h2>
-        <motion.p
+      {/* CTA Section */}
+      <section className="relative py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-rose-600 to-orange-500"></div>
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558769132-cb25c5d1c9c1?auto=format&fit=crop&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
+        
+        <motion.div
           initial="hidden"
           whileInView="visible"
-          variants={fadeUp}
-          transition={{ duration: 1, delay: 0.2 }}
+          variants={staggerContainer}
           viewport={{ once: true }}
-          className="max-w-2xl mx-auto text-lg text-pink-100 mb-8"
+          className="max-w-4xl mx-auto px-4 text-center relative z-10"
         >
-          Choose from our exclusive collection and make every occasion memorable.
-        </motion.p>
-<Link to="/products">
-  <motion.button
-    whileHover={{ scale: 1.05, backgroundColor: "#fce7f3", color: "#db2777" }}
-    whileTap={{ scale: 0.95 }}
-    className="px-10 py-4 bg-white text-pink-600 rounded-full font-semibold shadow-lg transition-colors"
-  >
-    Shop Now
-  </motion.button>
-</Link>
+          <motion.span 
+            variants={fadeUp}
+            className="text-pink-200 font-semibold text-lg mb-4 block"
+          >
+            Ready to Create Magic?
+          </motion.span>
+          
+          <motion.h2
+            variants={fadeUp}
+            className="text-4xl md:text-6xl font-black text-white mb-6"
+          >
+            Spread <span className="text-transparent bg-gradient-to-r from-yellow-200 to-orange-200 bg-clip-text">Joy</span> & <span className="text-transparent bg-gradient-to-r from-pink-200 to-rose-200 bg-clip-text">Happiness</span>
+          </motion.h2>
+          
+          <motion.p
+            variants={fadeUp}
+            className="text-xl text-pink-100 mb-10 max-w-2xl mx-auto leading-relaxed"
+          >
+            Transform your special moments into unforgettable memories with our exclusive collection of premium hampers
+          </motion.p>
 
+          <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link to="/products" className="w-full sm:w-auto">
+              <motion.button
+                whileHover={{ 
+                  scale: 1.05,
+                  backgroundColor: "#fdf2f8",
+                  color: "#db2777"
+                }}
+                whileTap={{ scale: 0.95 }}
+                className="w-full px-12 py-4 bg-white text-rose-600 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-3xl transition-all duration-300"
+              >
+                🛍️ Start Shopping
+              </motion.button>
+            </Link>
+            
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto px-8 py-4 bg-transparent border-2 border-white/30 text-white rounded-2xl font-semibold hover:bg-white/10 backdrop-blur-sm transition-all duration-300"
+            >
+              Contact Us
+            </motion.button>
+          </motion.div>
 
-
-
-
+          <motion.div
+            variants={fadeUp}
+            className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-white/80"
+          >
+            {[
+              { number: "100+", label: "Happy Customers" },
+              { number: "200+", label: "Unique Designs" },
+              { number: "24/7", label: "Support" },
+              { number: "100%", label: "Satisfaction" },
+            ].map((stat, index) => (
+              <div key={index} className="text-center">
+                <motion.p 
+                  className="text-3xl font-black text-white mb-2"
+                  whileInView={{ scale: [0.5, 1] }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  {stat.number}
+                </motion.p>
+                <p className="text-sm font-medium">{stat.label}</p>
+              </div>
+            ))}
+          </motion.div>
+        </motion.div>
       </section>
     </div>
   );
