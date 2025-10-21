@@ -5,7 +5,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import Register from './pages/Register';
+import {Analytics} from '@vercel/analytics/react';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import AboutUs from './pages/AboutUs';
@@ -41,7 +41,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+            
               <Route path="/products" element={<Products />} />
               <Route path="/products/:id" element={<ProductDetail />} />
               <Route path="/about" element={<AboutUs />} />
@@ -51,9 +51,11 @@ const App = () => {
             </Routes>
           </main>
           <Footer/>
+         <Analytics />
         </div>
       </Router>
     </AuthProvider>
+    
   );
 }
 

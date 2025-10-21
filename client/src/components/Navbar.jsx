@@ -195,13 +195,13 @@ const Navbar = () => {
               ) : (
                 <Link 
                   to="/admin" 
-                  className="flex items-center space-x-2 bg-gradient-to-r from-rose-500 to-pink-500 
+                  className="flex items-center space-x-2 bg-gradient-to-r from-rose-400 to-pink-500 
                              text-white px-5 py-2.5 rounded-xl font-semibold 
                              hover:from-rose-600 hover:to-pink-600 transition-all duration-300 
                              shadow-lg hover:shadow-xl border border-rose-400/50"
                 >
                   <FontAwesomeIcon icon={faUser} className="text-sm" />
-                  <span>Admin</span>
+                  <span></span>
                 </Link>
               )}
             </motion.div>
