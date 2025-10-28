@@ -30,7 +30,7 @@ function srcSetFor(urlOrId) {
   }).join(', ');
 }
 
-const ITEMS_PER_BATCH = 12; // Increased since cards are smaller
+const ITEMS_PER_BATCH = 12;
 
 const ProductCard = React.memo(function ProductCard({ product, onView, onOrder }) {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -55,7 +55,7 @@ const ProductCard = React.memo(function ProductCard({ product, onView, onOrder }
             
             <LazyLoadImage
               alt={product.name}
-             src={cloudinaryTransformed(product.imageUrl, 350, '70')}
+              src={cloudinaryTransformed(product.imageUrl, 350, '70')}
               srcSet={srcSetFor(product.imageUrl)}
               sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 22vw"
               effect="blur"
@@ -118,7 +118,7 @@ const ProductCard = React.memo(function ProductCard({ product, onView, onOrder }
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Changed to false - don't block initial render
   const [error, setError] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [searchTerm, setSearchTerm] = useState('');
@@ -131,22 +131,23 @@ const Products = () => {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
   const loadMoreRef = useRef(null);
 
+  // Load products in background - don't block UI
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const loadProducts = async () => {
+      setLoading(true);
+      try {
+        const data = await productService.getProducts();
+        setProducts(data || []);
+      } catch (err) {
+        console.error('Products fetch error:', err);
+        setError('Failed to fetch products');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const data = await productService.getProducts();
-      setProducts(data || []);
-    } catch (err) {
-      setError('Failed to fetch products');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    loadProducts();
+  }, []);
 
   // Filter and sort products
   const filteredAndSortedProducts = useMemo(() => {
@@ -246,29 +247,11 @@ const Products = () => {
     window.location.href = `/products/${id}`;
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="w-16 h-16 border-3 border-pink-200 border-t-pink-500 rounded-full animate-spin mx-auto"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-xl">🎁</span>
-            </div>
-          </div>
-          <p className="mt-4 text-base text-pink-700 font-semibold">
-            Loading products...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const visibleProducts = filteredAndSortedProducts.slice(0, visibleCount);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-rose-50 via-pink-50 to-orange-50">
-      {/* Header Section */}
+      {/* Header Section - Always visible immediately */}
       <div className="bg-gradient-to-r from-pink-500 to-rose-600 text-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-2xl md:text-4xl font-black mb-3 stylish-font">
@@ -281,7 +264,7 @@ const Products = () => {
       </div>
 
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Controls Section */}
+        {/* Controls Section - Always visible immediately */}
         <div className="bg-white rounded-xl shadow-md p-4 mb-6 border border-pink-100">
           <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
             {/* Search Bar */}
@@ -293,6 +276,7 @@ const Products = () => {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-8 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                  disabled={loading && products.length === 0}
                 />
                 <div className="absolute left-2.5 top-1/2 transform -translate-y-1/2 text-gray-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -308,6 +292,7 @@ const Products = () => {
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
                 className="w-full sm:w-40 border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+                disabled={loading && products.length === 0}
               >
                 <option value="name">Sort by Name</option>
                 <option value="price-low">Price: Low to High</option>
@@ -329,7 +314,25 @@ const Products = () => {
           </div>
         )}
 
-        {filteredAndSortedProducts.length === 0 ? (
+        {/* Products Loading State - Only affects products section */}
+        {loading && products.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <div className="w-16 h-16 border-3 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <span className="text-xl">🎁</span>
+                </div>
+              </div>
+              <p className="mt-4 text-base text-pink-700 font-semibold">
+                Loading our beautiful collection...
+              </p>
+              <p className="text-gray-500 text-sm mt-2">
+                This might take a moment
+              </p>
+            </div>
+          </div>
+        ) : filteredAndSortedProducts.length === 0 ? (
           <div className="text-center py-12">
             <div className="bg-white rounded-xl p-8 border border-pink-100 shadow-md max-w-md mx-auto">
               <div className="w-16 h-16 bg-pink-100 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -356,15 +359,21 @@ const Products = () => {
           </div>
         ) : (
           <>
-            {/* Products Count */}
+            {/* Products Count - Shows immediately when data is available */}
             <div className="flex justify-between items-center mb-4">
               <p className="text-gray-600 text-sm">
                 Showing {Math.min(visibleCount, filteredAndSortedProducts.length)} of {filteredAndSortedProducts.length} products
                 {searchTerm && ` for "${searchTerm}"`}
               </p>
+              {loading && (
+                <div className="flex items-center space-x-2 text-pink-600 text-sm">
+                  <div className="w-3 h-3 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                  <span>Updating...</span>
+                </div>
+              )}
             </div>
 
-            {/* Products Grid - More compact layout */}
+            {/* Products Grid */}
             <motion.div
               initial="hidden"
               animate="visible"
@@ -373,11 +382,11 @@ const Products = () => {
                 visible: {
                   opacity: 1,
                   transition: {
-                    staggerChildren: 0.05 // Faster stagger for more items
+                    staggerChildren: 0.05
                   }
                 }
               }}
-             className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4"
             >
               {visibleProducts.map((product) => (
                 <ProductCard 
