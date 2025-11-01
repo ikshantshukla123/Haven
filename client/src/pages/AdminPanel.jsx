@@ -27,6 +27,7 @@ const AdminPanel = () => {
 
   const [editingProduct, setEditingProduct] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [deletingOrderId, setDeletingOrderId] = useState(null);
 
   useEffect(() => {
     if (!isAdmin) {
@@ -123,11 +124,6 @@ const AdminPanel = () => {
         formDataToSend.append('image', formData.image);
       }
 
-      // Log FormData for debugging
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
-
       if (editingProduct) {
         await productService.updateProduct(editingProduct._id, formDataToSend);
         setSuccess('Product updated successfully!');
@@ -176,6 +172,22 @@ const AdminPanel = () => {
         fetchProducts();
       } catch (err) {
         setError('Failed to delete product');
+      }
+    }
+  };
+
+  const handleOrderDelete = async (orderId) => {
+    if (window.confirm('Are you sure you want to delete this order?')) {
+      setDeletingOrderId(orderId);
+      try {
+        await orderService.deleteOrder(orderId);
+        // Remove the order from local state without refreshing the page
+        setOrders(prevOrders => prevOrders.filter(order => order._id !== orderId));
+        setSuccess('Order deleted successfully!');
+      } catch (err) {
+        setError('Failed to delete order');
+      } finally {
+        setDeletingOrderId(null);
       }
     }
   };
@@ -335,20 +347,22 @@ const AdminPanel = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <button
-                            onClick={async () => {
-                              if (window.confirm('Are you sure you want to delete this order?')) {
-                                try {
-                                  await orderService.deleteOrder(order._id);
-                                  fetchOrders();
-                                  setSuccess('Order deleted successfully!');
-                                } catch (err) {
-                                  setError('Failed to delete order');
-                                }
-                              }
-                            }}
-                            className="bg-red-100 text-red-700 px-3 py-2 rounded-lg hover:bg-red-200 text-sm font-semibold transition-colors"
+                            onClick={() => handleOrderDelete(order._id)}
+                            disabled={deletingOrderId === order._id}
+                            className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${
+                              deletingOrderId === order._id
+                                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                : 'bg-red-100 text-red-700 hover:bg-red-200'
+                            }`}
                           >
-                            Delete
+                            {deletingOrderId === order._id ? (
+                              <div className="flex items-center space-x-1">
+                                <div className="w-3 h-3 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+                                <span>Deleting...</span>
+                              </div>
+                            ) : (
+                              'Delete'
+                            )}
                           </button>
                         </td>
                       </tr>
@@ -548,18 +562,18 @@ const AdminPanel = () => {
                   <label htmlFor="countInStock" className="block text-sm font-semibold text-gray-700 mb-2">
                     Stock Quantity *
                   </label>
-                  <input
-                    type="number"
-                    id="countInStock"
-                    name="countInStock"
-                    required
-                    min="0"
-                    value={formData.countInStock}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
-                    placeholder="10"
-                    disabled={loading}
-                  />
+                 <input
+  type="number"
+  id="countInStock"
+  name="countInStock"
+  required
+  min="0"
+  value={formData.countInStock}
+  onChange={handleInputChange}
+  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none transition-all"
+  placeholder="10"
+  disabled={loading}
+/>
                 </div>
 
                 <div>
