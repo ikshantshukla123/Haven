@@ -9,6 +9,9 @@ export async function deductBalance(wallet: Wallet, amount: number) {
     wallet.balance = wallet.balance - amount; // Not atomic
     return true;
   }
-
+//  Vulnerable: Sensitive data logging
+export function logPayment(cardNumber: string, cvv: string) {
+  console.log("PAYMENT DEBUG:", { cardNumber, cvv }); // BAD (PCI)
+}
   return false;
 }
