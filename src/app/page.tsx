@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GALLERY, HERO_IMAGES, galleryUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
@@ -21,23 +21,10 @@ export default function Home() {
   const [current, setCurrent] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [featured, setFeatured] = useState<Product[]>([]);
-  const blurRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const interval = setInterval(() => setCurrent((p) => (p + 1) % HERO_IMAGES.length), 5000);
     return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const onMove = (e: MouseEvent) => {
-      if (blurRef.current) {
-        const x = e.clientX - window.innerWidth / 2;
-        const y = e.clientY - window.innerHeight / 2;
-        blurRef.current.style.transform = `translate(${x / 3}px, ${y / 3}px)`;
-      }
-    };
-    window.addEventListener("mousemove", onMove);
-    return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
   useEffect(() => {
@@ -79,7 +66,7 @@ export default function Home() {
             initial="hidden"
             animate="visible"
             variants={fadeUp}
-            className="mb-6 inline-block rounded-full border border-white/30 bg-white/20 px-6 py-2 text-sm font-semibold backdrop-blur-sm"
+            className="mb-6 inline-block rounded-full border border-white/30 bg-white/20 px-6 py-2 text-sm font-semibold"
           >
             🎀 Premium Gift Hampers
           </motion.span>
@@ -107,13 +94,13 @@ export default function Home() {
           >
             <Link
               href="/products"
-              className="w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-12 py-4 text-center text-lg font-bold text-white shadow-2xl transition hover:scale-105 sm:w-auto"
+              className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-3 text-lg font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
             >
               🎁 Explore Collection
             </Link>
             <Link
               href="/about"
-              className="w-full rounded-full border border-white/30 bg-white/20 px-8 py-4 text-center font-semibold text-white backdrop-blur-sm transition hover:bg-white/30 sm:w-auto"
+              className="rounded-full border border-white/30 bg-white/20 px-8 py-3 font-semibold text-white transition hover:bg-white/30"
             >
               Learn More
             </Link>
@@ -133,11 +120,6 @@ export default function Home() {
             />
           </motion.div>
         </div>
-
-        <div
-          ref={blurRef}
-          className="pointer-events-none fixed h-80 w-80 rounded-full bg-rose-deep/20 blur-3xl"
-        />
       </section>
 
       {/* Gallery */}
@@ -161,7 +143,7 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: (i % 4) * 0.1 }}
-                className="group relative cursor-pointer overflow-hidden rounded-3xl border border-cream-200 bg-white shadow-lg"
+                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-cream-200 bg-white"
               >
                 <div className="relative h-72 overflow-hidden">
                   <img
@@ -176,7 +158,7 @@ export default function Home() {
                       <p className="text-lg font-bold">Luxury Collection</p>
                       <p className="text-sm text-blush-200">Handcrafted with love</p>
                     </div>
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-deep text-lg font-bold shadow-lg">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-deep text-lg font-bold">
                       →
                     </span>
                   </div>
@@ -188,7 +170,7 @@ export default function Home() {
           <div className="mt-12 text-center">
             <Link
               href="/products"
-              className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-3 font-semibold text-white shadow-lg transition hover:scale-105"
+              className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-3 font-semibold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
             >
               View All Products
             </Link>
@@ -229,9 +211,9 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.15 }}
-                className="rounded-3xl border border-cream-200 bg-white/80 p-8 shadow-xl backdrop-blur-sm"
+                className="rounded-2xl border border-cream-200 bg-white p-8"
               >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blush-200 to-rose-deep text-2xl shadow-lg">
+                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blush-200 to-rose-deep text-2xl">
                   {item.icon}
                 </div>
                 <h3 className="mb-4 text-center text-2xl font-bold text-ink">{item.title}</h3>
@@ -262,7 +244,7 @@ export default function Home() {
                 <Link
                   key={p.id}
                   href={`/products/${p.id}`}
-                  className="group overflow-hidden rounded-2xl border border-cream-200 bg-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
+                  className="group overflow-hidden rounded-lg border border-cream-200 bg-white transition-colors hover:border-rose-deep"
                 >
                   <div className="aspect-[3/4] overflow-hidden bg-blush-50">
                     {p.image_url ? (
@@ -302,7 +284,7 @@ export default function Home() {
           </p>
           <Link
             href="/products"
-            className="inline-block rounded-full bg-white px-12 py-4 text-lg font-bold text-rose-deep shadow-2xl transition hover:scale-105"
+            className="inline-block rounded-full bg-white px-8 py-3 text-lg font-bold text-rose-deep transition hover:bg-blush-50"
           >
             🛍️ Start Shopping
           </Link>

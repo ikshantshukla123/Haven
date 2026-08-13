@@ -19,7 +19,7 @@ export default function AboutUsPage() {
 
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
         <div className="mb-16 grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-xl">
+          <div className="rounded-2xl border border-cream-200 bg-white p-8">
             <div className="mb-6 flex items-center">
               <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-rose-deep to-rose-deep-600 text-xl">
                 📖
@@ -41,7 +41,7 @@ export default function AboutUsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-xl">
+          <div className="rounded-2xl border border-cream-200 bg-white p-8">
             <div className="mb-6 flex items-center">
               <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-r from-rose-deep-600 to-rose-deep text-xl">
                 🎯
@@ -107,9 +107,9 @@ export default function AboutUsPage() {
             ].map((f) => (
               <div
                 key={f.title}
-                className="rounded-xl border border-white/30 bg-white/20 p-6 text-center backdrop-blur-sm"
+                className="rounded-xl border border-white/30 bg-white/10 p-6 text-center"
               >
-                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-white/30 bg-white/20 text-3xl">
+                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl border border-white/30 bg-white/10 text-3xl">
                   {f.icon}
                 </div>
                 <h3 className="mb-3 text-xl font-bold">{f.title}</h3>
@@ -119,7 +119,7 @@ export default function AboutUsPage() {
           </div>
         </div>
 
-        <div className="mb-16 rounded-2xl border border-cream-200 bg-white p-8 shadow-xl md:p-12">
+        <div className="mb-16 rounded-2xl border border-cream-200 bg-white p-8 md:p-12">
           <div className="mb-12 text-center">
             <h2 className="mb-4 font-serif text-4xl font-black text-ink">Our Values</h2>
             <p className="mx-auto max-w-2xl text-lg text-ink-soft">
@@ -134,7 +134,7 @@ export default function AboutUsPage() {
               { title: "Sustainability", desc: "We're committed to environmentally responsible practices", color: "from-rose-deep to-rose-deep-700" },
             ].map((v) => (
               <div key={v.title} className="text-center transition hover:scale-105">
-                <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r ${v.color} font-bold text-white shadow-lg`}>
+                <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-r ${v.color} font-bold text-white`}>
                   {v.title.charAt(0)}
                 </div>
                 <h3 className="mb-3 text-lg font-bold text-ink">{v.title}</h3>
@@ -155,10 +155,10 @@ export default function AboutUsPage() {
             {TEAM.map((member) => (
               <div
                 key={member.name}
-                className="rounded-2xl border border-cream-200 bg-white p-6 text-center shadow-lg transition hover:shadow-2xl"
+                className="rounded-2xl border border-cream-200 bg-white p-6 text-center"
               >
                 <div className="relative mb-6">
-                  <div className="mx-auto h-32 w-32 overflow-hidden rounded-2xl border-4 border-blush-200 shadow-lg">
+                  <div className="mx-auto h-32 w-32 overflow-hidden rounded-2xl border-4 border-blush-200">
                     <img
                       src={member.image}
                       alt={member.name}
@@ -171,7 +171,7 @@ export default function AboutUsPage() {
                   href={member.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-2 font-semibold text-white shadow transition hover:from-rose-deep-600 hover:to-rose-deep-700"
+                  className="inline-flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-2 font-semibold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
                 >
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5zm4.25 2.25a5.25 5.25 0 1 1-5.25 5.25a5.25 5.25 0 0 1 5.25-5.25zm0 1.5a3.75 3.75 0 1 0 3.75 3.75a3.75 3.75 0 0 0-3.75-3.75zm5.25.75a1 1 0 1 1-2 0a1 1 0 0 1 2 0z" />

@@ -30,7 +30,7 @@ export default function DetailClient({
       </div>
 
       <div className="mx-auto max-w-7xl px-4 py-6">
-        <div className="rounded-xl border border-cream-200 bg-white shadow-md">
+        <div className="rounded-xl border border-cream-200 bg-white">
           <div className="grid grid-cols-1 gap-6 p-4 lg:grid-cols-2 lg:gap-8 lg:p-6">
             <div className="flex items-center justify-center overflow-hidden rounded-lg border border-cream-100 bg-cream-50">
               {product.image_url ? (
@@ -63,7 +63,7 @@ export default function DetailClient({
 
               <button
                 onClick={() => setOrderOpen(true)}
-                className="w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-2.5 text-sm font-bold text-white shadow transition hover:from-rose-deep-600 hover:to-rose-deep-700"
+                className="w-full max-w-xs rounded-lg bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-3 text-base font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
               >
                 BUY NOW
               </button>
@@ -122,7 +122,7 @@ export default function DetailClient({
                 <Link
                   key={rp.id}
                   href={`/products/${rp.id}`}
-                  className="group rounded-xl border-2 border-cream-100 bg-white transition hover:border-blush-300 hover:shadow-lg"
+                  className="group rounded-xl border-2 border-cream-100 bg-white transition hover:border-blush-300"
                 >
                   <div className="aspect-square overflow-hidden rounded-t-xl bg-cream-50">
                     {rp.image_url ? (

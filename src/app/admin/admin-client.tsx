@@ -207,7 +207,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
               }}
               className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
                 tab === t.id
-                  ? "bg-rose-deep text-white shadow-lg"
+                  ? "bg-rose-deep text-white"
                   : "border border-cream-200 bg-white text-ink-soft hover:bg-blush-50"
               }`}
             >
@@ -234,7 +234,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
         ) : (
           <>
             {tab === "view" && (
-              <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6 shadow-md">
+              <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6">
                 <div className="mb-4 flex items-center justify-between">
                   <h2 className="text-xl font-bold text-ink">All Products</h2>
                   <span className="rounded-full bg-blush-100 px-3 py-1 text-sm font-semibold text-rose-deep">
@@ -309,7 +309,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
             )}
 
             {tab === "create" && (
-              <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-md">
+              <div className="rounded-2xl border border-cream-200 bg-white p-8">
                 <div className="mb-6 flex items-center justify-between">
                   <h2 className="text-xl font-bold text-ink">
                     {editing ? "Edit Product" : "Add New Product"}
@@ -402,7 +402,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 py-4 text-lg font-bold text-white shadow-lg transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
+                    className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-2.5 text-base font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
                   >
                     {saving ? "Saving..." : editing ? "Update Product" : "Add Product"}
                   </button>
@@ -411,7 +411,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
             )}
 
             {tab === "orders" && (
-              <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6 shadow-md">
+              <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6">
                 <h2 className="mb-4 text-xl font-bold text-ink">All Orders</h2>
                 {orders.length === 0 ? (
                   <p className="py-12 text-center text-ink-soft">No orders found yet.</p>
@@ -463,7 +463,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
             )}
 
             {tab === "messages" && (
-              <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6 shadow-md">
+              <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6">
                 <h2 className="mb-4 text-xl font-bold text-ink">Contact Messages</h2>
                 {messages.length === 0 ? (
                   <p className="py-12 text-center text-ink-soft">No messages yet.</p>

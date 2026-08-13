@@ -27,14 +27,14 @@ export default function Navbar({ user }: { user: { email: string } | null }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-cream-200 bg-cream-50/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-cream-200 bg-cream-50">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center space-x-3">
           <div className="relative">
             <img
               src={LOGO_URL}
               alt={`${SITE.name} logo`}
-              className="h-14 w-14 rounded-2xl border-2 border-blush-200 object-cover shadow-lg"
+              className="h-14 w-14 rounded-2xl border-2 border-blush-200 object-cover"
             />
             <div className="absolute -inset-1 rounded-2xl border border-champagne-300" />
           </div>
@@ -70,7 +70,7 @@ export default function Navbar({ user }: { user: { email: string } | null }) {
             <>
               <Link
                 href="/admin"
-                className="hidden rounded-xl bg-gradient-to-r from-rose-deep to-rose-deep-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg transition hover:from-rose-deep-600 hover:to-rose-deep-700 sm:block"
+                className="hidden rounded-xl bg-gradient-to-r from-rose-deep to-rose-deep-600 px-5 py-2.5 text-sm font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700 sm:block"
               >
                 Admin Panel
               </Link>
@@ -85,7 +85,7 @@ export default function Navbar({ user }: { user: { email: string } | null }) {
 
           <button
             onClick={() => setOpen(!open)}
-            className="rounded-xl bg-gradient-to-r from-rose-deep to-rose-deep-600 p-3 text-white shadow-lg lg:hidden"
+            className="rounded-xl bg-gradient-to-r from-rose-deep to-rose-deep-600 p-3 text-white lg:hidden"
             aria-label="Toggle menu"
           >
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -21,7 +21,7 @@ export default async function ProductDetailPage({
   if (!product) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-cream-50 px-4">
-        <div className="max-w-md rounded-xl border border-cream-200 bg-white p-8 text-center shadow-md">
+        <div className="max-w-md rounded-xl border border-cream-200 bg-white p-8 text-center">
           <h2 className="mb-4 font-serif text-2xl font-bold text-ink">Product Not Found</h2>
           <p className="mb-6 text-ink-soft">This product does not exist.</p>
           <Link

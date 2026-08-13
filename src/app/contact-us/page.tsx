@@ -65,7 +65,7 @@ export default function ContactUsPage() {
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           <div className="space-y-8">
-            <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-sm">
+            <div className="rounded-2xl border border-cream-200 bg-white p-8">
               <h2 className="mb-6 text-2xl font-semibold text-ink">Get in Touch</h2>
               <div className="space-y-6 text-ink-soft">
                 <div className="flex items-start space-x-4">
@@ -102,7 +102,7 @@ export default function ContactUsPage() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-sm">
+            <div className="rounded-2xl border border-cream-200 bg-white p-8">
               <h2 className="mb-4 text-2xl font-semibold text-ink">Why Contact Us?</h2>
               <ul className="space-y-3 text-ink-soft">
                 {[
@@ -122,7 +122,7 @@ export default function ContactUsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-cream-200 bg-white p-8 shadow-sm">
+          <div className="rounded-2xl border border-cream-200 bg-white p-8">
             <h2 className="mb-6 text-2xl font-semibold text-ink">Send us a Message</h2>
 
             {submitted ? (
@@ -227,7 +227,7 @@ export default function ContactUsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-3 font-semibold text-white shadow-lg transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
+                  className="w-full max-w-xs rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-3 font-semibold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
                 >
                   {submitting ? "Sending..." : "Send Message"}
                 </button>

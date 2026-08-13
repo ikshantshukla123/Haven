@@ -58,8 +58,8 @@ export default function OrderModal({ product, isCustom, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl border border-cream-200 bg-white shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl border border-cream-200 bg-white">
         <div className="flex items-center justify-between border-b border-cream-100 p-5">
           <h2 className="font-serif text-xl font-bold text-ink">
             {isCustom ? "Create Your Special Gift" : "Place Order"}

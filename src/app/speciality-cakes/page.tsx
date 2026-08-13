@@ -11,7 +11,7 @@ export default function SpecialOnePage() {
     <main className="min-h-screen bg-cream-50">
       <div className="mx-auto flex max-w-5xl flex-col items-center py-12 px-4">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-r from-rose-deep to-rose-deep-600 text-2xl shadow-lg">
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-r from-rose-deep to-rose-deep-600 text-2xl">
             🎁
           </div>
           <h1 className="mb-4 font-serif text-4xl font-black text-ink sm:text-5xl">
@@ -61,13 +61,13 @@ export default function SpecialOnePage() {
             </div>
           </div>
 
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-cream-200 bg-white p-8 shadow-2xl">
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-cream-200 bg-white p-8">
             <p className="mb-4 text-center text-lg text-ink-soft">
               Share your idea and we&apos;ll bring it to life.
             </p>
             <button
               onClick={() => setOpen(true)}
-              className="w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-4 text-lg font-bold text-white shadow-lg transition hover:scale-[1.02] hover:from-rose-deep-600 hover:to-rose-deep-700"
+              className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-3 text-base font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
             >
               Start My Custom Gift
             </button>

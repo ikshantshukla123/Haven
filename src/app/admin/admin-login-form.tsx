@@ -36,7 +36,7 @@ export default function AdminLoginForm() {
           <p className="mt-2 text-sm text-ink-soft">Enter your credentials to manage the store.</p>
         </div>
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          <div className="rounded-2xl border border-cream-200 bg-white p-6 shadow-lg">
+          <div className="rounded-2xl border border-cream-200 bg-white p-6">
             {error && (
               <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                 {error}
@@ -79,7 +79,7 @@ export default function AdminLoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="mt-6 w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-4 py-3 text-sm font-bold text-white shadow-lg transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
+              className="mt-6 w-full rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-4 py-3 text-sm font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
             >
               {loading ? "Signing in..." : "Sign in"}
             </button>
