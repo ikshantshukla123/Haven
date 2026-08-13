@@ -1,74 +1,95 @@
 # Hamper Heaven
-LIVE:(https://haven-snowy.vercel.app/)
+
+LIVE: https://haven-snowy.vercel.app/
+
 ## Overview
 
-Hamper Heaven is a modern full-stack gifting platform. Users can browse and order curated or custom gift hampers without login. Only the admin can log in to manage products and view/delete orders.
+Hamper Heaven is a gifting platform for a gift hamper brand. Customers browse and
+order curated or custom gift hampers without logging in. Only the admin logs in to
+manage products, view/delete orders, and read contact messages.
 
 ## Tech Stack
 
-- **Frontend:** React 18 (Vite), Tailwind CSS, Framer Motion, React Router DOM, Axios
-- **Backend:** Node.js, Express, MongoDB (Mongoose), Cloudinary (for images)
+- **Frontend:** Next.js 16 (App Router, TypeScript, Tailwind CSS v4, Framer Motion)
+- **Backend & Database:** Supabase (Postgres + Auth + Storage)
+- **Deployment:** Vercel
+- **Images:** Supabase Storage (WebP only, public bucket `Hamper-haven`)
+
+The legacy React/Vite + Express + MongoDB code lives in `legacy/` and is unused.
 
 ## Features
 
 ### User Side
 
-- Beautiful homepage with animated photo gallery (glassmorphism, framer-motion)
-- Browse all products, view details, and order online (no login required)
-- Special One: Custom gift request form (admin receives in panel)
-- About Us: Team section with Instagram links
-- Responsive, modern UI with smooth scroll and animated navbar
+- Homepage with animated hero, gallery, bestsellers, and features sections
+- Browse all products with search, sort, and infinite scroll
+- Product detail pages with "Buy Now" order modal (name + mobile, no login)
+- Special One: custom gift request form
+- Contact Us form that saves messages to the admin panel
+- About Us with team section and Instagram links
 
 ### Admin Side
 
-- Login as admin only (no user registration/login for customers)
-- Admin Panel: Add, edit, delete products (with image upload)
-- View all orders (product & custom), delete completed orders
-- Direct link to Admin Panel in navbar when logged in
+- Admin-only login via Supabase Auth (no customer accounts)
+- Admin Panel at `/admin`:
+  - Add / edit / delete products (image upload, WebP/PNG ≤ 2MB)
+  - View / delete all orders (product & custom)
+  - View / delete contact messages
 
-## Color & UI
+## Setup
 
-- Light pink backgrounds, glassmorphism cards, modern Tailwind design
-- Pink and dark pink accents, blue hover/active for navbar
-- Floating portfolio button on About Us page
+### 1. Prerequisites
 
-## API & Integration
+- Supabase project (create at supabase.com)
+- Node.js 20+
 
-- REST API (Express)
-- Product CRUD, order creation, order deletion (admin only)
-- Image upload to Cloudinary
+### 2. Environment variables
 
-## How to Use
+Copy the values from your Supabase project (Project Settings → API) into `.env`:
 
-### For Users
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<anon key>
+SUPABASE_SERVICE_ROLE_KEY=<service role key>   # server-side only
+NEXT_PUBLIC_SUPABASE_BUCKET=Hamper-haven
+```
 
-1. Browse products and place orders directly (no login needed)
-2. Use "Special One" for custom gift requests
+Never commit `.env`. It is gitignored.
 
-### For Admin
+### 3. Database setup
 
-1. Login at `/admin` (credentials set in DB)
-2. Manage products and orders from the Admin Panel
-3. Delete completed orders as needed
+Run `supabase-schema.sql` once in the Supabase Dashboard → SQL Editor. It creates
+`products`, `orders`, and `contact_messages` tables with Row Level Security and
+Storage policies.
+
+### 4. Storage bucket
+
+Bucket `Hamper-haven` (public, WebP/PNG only, 2MB file limit).
+
+### 5. Admin user
+
+Create your single admin account in Supabase Dashboard → Authentication → Users →
+Add user.
+
+### 6. Run locally
+
+```bash
+npm install
+npm run dev
+```
+
+## Scripts
+
+- `npm run dev` — start dev server
+- `npm run build` — production build
+- `npm run lint` — run ESLint
+- `node --env-file=.env scripts/upload-images.mjs` — one-time script that converts
+  the legacy client images to WebP and uploads them to the storage bucket
 
 ## Deployment
 
-- **Frontend:** Deploy `/client` folder to Vercel (Vite + Tailwind supported out of the box)
-- **Backend:** Deploy `/server` folder to Railway (Node.js/Express)
-- **MongoDB:** Use MongoDB Atlas or Railway's managed MongoDB
-
-## Setup & Build
-
-1. Clone the repo and install dependencies in both `/client` and `/server`
-2. Configure environment variables for backend (MongoDB URI, JWT, Cloudinary)
-3. Run backend: `npm run dev` in `/server`
-4. Run frontend: `npm run dev` in `/client`
-
-## Notes
-
-- Tailwind CSS and framer-motion are required for full UI/UX
-- Make sure to rename any `.js` files containing JSX to `.jsx` for Vite
-- For production, ensure all environment variables are set on Vercel/Railway
+Import the repo into Vercel and set the four environment variables above. The
+`legacy/` folder is not deployed.
 
 ---
 
