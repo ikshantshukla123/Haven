@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { ContactMessage, Order, Product } from "@/lib/types";
 import { formatPrice } from "@/lib/types";
+import Spinner from "@/components/Spinner";
 
 const BUCKET = process.env.NEXT_PUBLIC_SUPABASE_BUCKET || "Hamper-haven";
 const MAX_SIZE = 2 * 1024 * 1024; // 2MB
@@ -18,6 +19,30 @@ const emptyForm = {
   image: null as File | null,
 };
 
+type OrderFilter = "all" | "product" | "custom";
+
+// Split the stored custom_details into a readable item part + delivery address part.
+// Product orders store: "Address: <addr> | Note: ... | Cart order: ..."
+// Custom orders store:  "Gift: <gift> | Address: <addr> | Note: ..."
+function splitOrderDetails(o: Order): { item: string; address: string } {
+  const cd = o.custom_details ?? "";
+  const columnAddress = [o.address, o.city, o.pincode].filter(Boolean).join(", ");
+  if (o.is_custom) {
+    const marker = " | Address: ";
+    const idx = cd.indexOf(marker);
+    if (idx >= 0) {
+      return {
+        item: cd.slice(0, idx).replace(/^Gift:\s*/, ""),
+        address: columnAddress || cd.slice(idx + marker.length),
+      };
+    }
+    return { item: cd.replace(/^Gift:\s*/, ""), address: columnAddress };
+  }
+  let address = cd.startsWith("Address: ") ? cd.slice("Address: ".length) : cd;
+  if (columnAddress) address = columnAddress + (address ? ` (${address})` : "");
+  return { item: o.product_name ?? "", address };
+}
+
 export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
   const [tab, setTab] = useState<Tab>("view");
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,6 +53,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
   const [success, setSuccess] = useState("");
   const [form, setForm] = useState(emptyForm);
   const [editing, setEditing] = useState<Product | null>(null);
+  const [orderFilter, setOrderFilter] = useState<OrderFilter>("all");
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -187,6 +213,10 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
   const inputClass =
     "w-full rounded-xl border border-cream-200 px-4 py-3 focus:border-rose-deep focus:outline-none focus:ring-2 focus:ring-rose-deep/20";
 
+  const visibleOrders = orders.filter((o) =>
+    orderFilter === "all" ? true : orderFilter === "custom" ? o.is_custom : !o.is_custom,
+  );
+
   return (
     <div className="min-h-screen bg-cream-50">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -205,7 +235,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                 setTab(t.id);
                 if (t.id !== "create") resetForm();
               }}
-              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition ${
+              className={`rounded-full px-5 py-2.5 text-sm font-semibold transition-all duration-200 active:scale-95 ${
                 tab === t.id
                   ? "bg-rose-deep text-white"
                   : "border border-cream-200 bg-white text-ink-soft hover:bg-blush-50"
@@ -246,7 +276,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                     <p className="mb-4 text-ink-soft">No products yet. Add your first product!</p>
                     <button
                       onClick={() => setTab("create")}
-                      className="rounded-full bg-rose-deep px-6 py-2 font-semibold text-white hover:bg-rose-deep-600"
+                      className="rounded-full bg-rose-deep px-6 py-2 font-semibold text-white transition-all duration-200 hover:-translate-y-px hover:bg-rose-deep-600 hover:shadow-md active:translate-y-0 active:scale-95"
                     >
                       Add First Product
                     </button>
@@ -288,14 +318,14 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                           <td className="px-4 py-4 text-right">
                             <button
                               onClick={() => handleEdit(p)}
-                              className="mr-2 rounded-lg bg-rose-deep px-3 py-1.5 text-sm font-semibold text-white hover:bg-rose-deep-600"
+                              className="mr-2 rounded-lg bg-rose-deep px-3 py-1.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-rose-deep-600 hover:shadow-sm active:scale-90"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(p.id)}
                               disabled={deletingId === p.id}
-                              className="rounded-lg bg-red-500 px-3 py-1.5 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50"
+                              className="rounded-lg bg-red-500 px-3 py-1.5 text-sm font-semibold text-white transition-all duration-150 hover:bg-red-600 hover:shadow-sm active:scale-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
                             >
                               {deletingId === p.id ? "..." : "Delete"}
                             </button>
@@ -402,8 +432,9 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                   <button
                     type="submit"
                     disabled={saving}
-                    className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-2.5 text-base font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-2.5 text-base font-bold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:brightness-110 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:shadow-md disabled:active:scale-100"
                   >
+                    {saving && <Spinner />}
                     {saving ? "Saving..." : editing ? "Update Product" : "Add Product"}
                   </button>
                 </form>
@@ -412,50 +443,93 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
 
             {tab === "orders" && (
               <div className="overflow-x-auto rounded-2xl border border-cream-200 bg-white p-6">
-                <h2 className="mb-4 text-xl font-bold text-ink">All Orders</h2>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <h2 className="text-xl font-bold text-ink">
+                    All Orders{" "}
+                    <span className="ml-1 rounded-full bg-blush-100 px-3 py-1 text-sm font-semibold text-rose-deep">
+                      {orders.length}
+                    </span>
+                  </h2>
+                  <div className="flex gap-2">
+                    {(
+                      [
+                        { id: "all", label: "All" },
+                        { id: "product", label: "Products" },
+                        { id: "custom", label: "Custom" },
+                      ] as { id: OrderFilter; label: string }[]
+                    ).map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => setOrderFilter(f.id)}
+                        className={`rounded-full px-4 py-1.5 text-xs font-semibold transition ${
+                          orderFilter === f.id
+                            ? "bg-rose-deep text-white"
+                            : "border border-cream-200 bg-white text-ink-soft hover:bg-blush-50"
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 {orders.length === 0 ? (
                   <p className="py-12 text-center text-ink-soft">No orders found yet.</p>
+                ) : visibleOrders.length === 0 ? (
+                  <p className="py-12 text-center text-ink-soft">
+                    No {orderFilter === "custom" ? "custom" : "product"} orders found.
+                  </p>
                 ) : (
                   <table className="min-w-full divide-y divide-cream-100">
                     <thead className="bg-cream-50">
                       <tr>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Type</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Details</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Item</th>
+                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Delivery Address</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Customer</th>
-                        <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Mobile</th>
                         <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-ink-soft">Date</th>
                         <th className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-ink-soft">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-cream-100">
-                      {orders.map((o) => (
-                        <tr key={o.id} className="hover:bg-cream-50">
-                          <td className="px-4 py-4">
-                            <span className={`rounded-full px-3 py-1 text-xs font-semibold ${o.is_custom ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
-                              {o.is_custom ? "Custom" : `Product${o.quantity > 1 ? ` ×${o.quantity}` : ""}`}
-                            </span>
-                          </td>
-                          <td className="max-w-xs px-4 py-4">
-                            <p className="truncate text-sm font-medium text-ink">
-                              {o.is_custom ? o.custom_details : o.product_name}
-                            </p>
-                          </td>
-                          <td className="px-4 py-4 text-sm text-ink">{o.user_name}</td>
-                          <td className="px-4 py-4 font-mono text-sm text-ink-soft">{o.user_mobile}</td>
-                          <td className="px-4 py-4 text-sm text-ink-soft">
-                            {new Date(o.created_at).toLocaleDateString()}
-                          </td>
-                          <td className="px-4 py-4 text-right">
-                            <button
-                              onClick={() => handleDeleteOrder(o.id)}
-                              disabled={deletingId === o.id}
-                              className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50"
-                            >
-                              {deletingId === o.id ? "..." : "Delete"}
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
+                      {visibleOrders.map((o) => {
+                        const { item, address } = splitOrderDetails(o);
+                        return (
+                            <tr key={o.id} className="align-top hover:bg-cream-50">
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${o.is_custom ? "bg-purple-100 text-purple-800" : "bg-blue-100 text-blue-800"}`}>
+                                  {o.is_custom ? "Custom" : `Product${o.quantity > 1 ? ` ×${o.quantity}` : ""}`}
+                                </span>
+                              </td>
+                              <td className="min-w-40 max-w-xs px-4 py-4">
+                                <p className="break-words text-sm font-medium text-ink">{item || "—"}</p>
+                              </td>
+                              <td className="min-w-48 max-w-sm px-4 py-4">
+                                <p className="break-words text-sm text-ink-soft">{address || "—"}</p>
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-4">
+                                <p className="text-sm font-semibold text-ink">{o.user_name}</p>
+                                <p className="font-mono text-xs text-ink-soft">{o.user_mobile}</p>
+                              </td>
+                              <td className="whitespace-nowrap px-4 py-4 text-xs text-ink-soft">
+                                {new Date(o.created_at).toLocaleString("en-IN", {
+                                  day: "numeric",
+                                  month: "short",
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                })}
+                              </td>
+                              <td className="px-4 py-4 text-right">
+                                <button
+                                  onClick={() => handleDeleteOrder(o.id)}
+                                  disabled={deletingId === o.id}
+                                  className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-700 transition-all duration-150 hover:bg-red-200 active:scale-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
+                                >
+                                  {deletingId === o.id ? "..." : "Delete"}
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                     </tbody>
                   </table>
                 )}
@@ -498,7 +572,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                             <button
                               onClick={() => handleDeleteMessage(m.id)}
                               disabled={deletingId === m.id}
-                              className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50"
+                              className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-700 transition-all duration-150 hover:bg-red-200 active:scale-90 disabled:cursor-not-allowed disabled:opacity-50 disabled:active:scale-100"
                             >
                               {deletingId === m.id ? "..." : "Delete"}
                             </button>
