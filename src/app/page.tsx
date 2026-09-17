@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GALLERY, HERO_IMAGES, galleryUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
@@ -21,6 +21,11 @@ export default function Home() {
   const [current, setCurrent] = useState(0);
   const [products, setProducts] = useState<Product[]>([]);
   const [featured, setFeatured] = useState<Product[]>([]);
+  const galleryRef = useRef<HTMLDivElement>(null);
+
+  const scrollGallery = (dir: 1 | -1) => {
+    galleryRef.current?.scrollBy({ left: dir * 340, behavior: "smooth" });
+  };
 
   useEffect(() => {
     const interval = setInterval(() => setCurrent((p) => (p + 1) % HERO_IMAGES.length), 5000);
@@ -76,7 +81,7 @@ export default function Home() {
             variants={fadeUp}
             className="font-serif text-5xl font-black leading-tight md:text-7xl"
           >
-            Hamper Heaven
+            Hamper Haven
           </motion.h1>
           <motion.p
             initial="hidden"
@@ -94,13 +99,13 @@ export default function Home() {
           >
             <Link
               href="/products"
-              className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-3 text-lg font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
+              className="rounded-none bg-gradient-to-r from-rose-deep to-rose-deep-600 px-5 py-2 text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:brightness-110 active:translate-y-0 active:scale-95"
             >
-              🎁 Explore Collection
+              Explore Collection
             </Link>
             <Link
               href="/about"
-              className="rounded-full border border-white/30 bg-white/20 px-8 py-3 font-semibold text-white transition hover:bg-white/30"
+              className="rounded-none border border-white/30 bg-white/20 px-5 py-2 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/30 hover:shadow-lg active:translate-y-0 active:scale-95"
             >
               Learn More
             </Link>
@@ -123,60 +128,141 @@ export default function Home() {
       </section>
 
       {/* Gallery */}
-      <section className="relative py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <div className="mb-12 text-center">
-            <p className="mb-2 font-semibold text-rose-deep">Our Masterpieces</p>
-            <h2 className="font-serif text-3xl font-black text-ink sm:text-5xl">
+      <section className="py-16 sm:py-24">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="mb-10 text-center sm:mb-14">
+            <p className="mb-3 text-sm font-semibold tracking-widest text-rose-deep uppercase">
+              Our Work
+            </p>
+            <h2 className="font-serif text-3xl font-bold text-ink sm:text-5xl">
               Visual Elegance
             </h2>
-            <p className="mx-auto mt-4 max-w-3xl text-lg text-ink-soft">
-              Discover our carefully crafted hampers, each designed to create lasting memories
+            <p className="mx-auto mt-4 max-w-2xl text-lg text-ink-soft">
+              Real hampers, crafted with love by Hamper Haven
             </p>
           </div>
+        </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="relative mx-auto max-w-6xl">
+          <div
+            ref={galleryRef}
+            className="flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-4 sm:gap-4 sm:px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {GALLERY.map((photo, i) => (
-              <motion.div
+              <motion.figure
                 key={photo}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: (i % 4) * 0.1 }}
-                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-cream-200 bg-white"
+                transition={{ duration: 0.5, delay: Math.min(i, 3) * 0.08 }}
+                className="w-[72vw] shrink-0 snap-center overflow-hidden rounded-xl sm:w-[300px] lg:w-[320px]"
               >
-                <div className="relative h-72 overflow-hidden">
-                  <img
-                    src={galleryUrl(photo)}
-                    alt={`Luxury hamper ${i + 1}`}
-                    loading="lazy"
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between text-white opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-                    <div>
-                      <p className="text-lg font-bold">Luxury Collection</p>
-                      <p className="text-sm text-blush-200">Handcrafted with love</p>
-                    </div>
-                    <span className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-deep text-lg font-bold">
-                      →
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
+                <img
+                  src={galleryUrl(photo)}
+                  alt={`Hamper Haven creation ${i + 1}`}
+                  loading="lazy"
+                  draggable={false}
+                  className="aspect-[3/4] w-full select-none object-cover transition-transform duration-500 hover:scale-105"
+                />
+              </motion.figure>
             ))}
           </div>
 
-          <div className="mt-12 text-center">
-            <Link
-              href="/products"
-              className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-8 py-3 font-semibold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
-            >
-              View All Products
-            </Link>
-          </div>
+          <button
+            onClick={() => scrollGallery(-1)}
+            aria-label="Scroll gallery left"
+            className="absolute top-1/2 left-2 hidden -translate-y-1/2 rounded-full border border-cream-200 bg-white/90 p-3 text-ink shadow-lg backdrop-blur transition-all duration-200 hover:scale-110 hover:border-rose-deep hover:text-rose-deep hover:shadow-xl active:scale-95 md:block"
+          >
+            ←
+          </button>
+          <button
+            onClick={() => scrollGallery(1)}
+            aria-label="Scroll gallery right"
+            className="absolute top-1/2 right-2 hidden -translate-y-1/2 rounded-full border border-cream-200 bg-white/90 p-3 text-ink shadow-lg backdrop-blur transition-all duration-200 hover:scale-110 hover:border-rose-deep hover:text-rose-deep hover:shadow-xl active:scale-95 md:block"
+          >
+            →
+          </button>
+        </div>
+
+        <div className="mx-auto mt-6 flex max-w-6xl items-center justify-center gap-3 px-4 sm:px-6">
+          <button
+            onClick={() => scrollGallery(-1)}
+            aria-label="Scroll gallery left"
+            className="rounded-full border border-cream-200 bg-white px-4 py-2 font-semibold text-ink shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-rose-deep hover:text-rose-deep hover:shadow-md active:scale-90 md:hidden"
+          >
+            ←
+          </button>
+          <p className="text-sm font-medium text-ink-soft">Swipe to explore →</p>
+          <button
+            onClick={() => scrollGallery(1)}
+            aria-label="Scroll gallery right"
+            className="rounded-full border border-cream-200 bg-white px-4 py-2 font-semibold text-ink shadow-sm transition-all duration-200 hover:-translate-y-px hover:border-rose-deep hover:text-rose-deep hover:shadow-md active:scale-90 md:hidden"
+          >
+            →
+          </button>
+        </div>
+
+        <div className="mt-6 text-center">
+          <Link
+            href="/products"
+            className="group inline-flex items-center gap-1 font-semibold text-rose-deep underline-offset-4 transition-all duration-200 hover:gap-2 hover:underline active:scale-95"
+          >
+            View all products
+            <span aria-hidden className="transition-transform duration-200 group-hover:translate-x-0.5">→</span>
+          </Link>
         </div>
       </section>
+
+      {/* Featured Products */}
+      {featured.length > 0 && (
+        <section className="py-24">
+          <div className="mx-auto max-w-7xl px-4">
+            <h2 className="mb-12 text-center font-serif text-4xl font-black text-ink sm:text-5xl">
+              Bestsellers
+            </h2>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {featured.map((p) => (
+                <Link
+                  key={p.id}
+                  href={`/products/${p.id}`}
+                  className="group block overflow-hidden rounded-lg border border-cream-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-rose-deep hover:shadow-lg"
+                >
+                  <div className="relative aspect-[3/4] overflow-hidden bg-blush-50">
+                    {p.image_url ? (
+                      <img
+                        src={p.image_url}
+                        alt={p.name}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-blush-300">🎁</div>
+                    )}
+                    {p.description && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/60 p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        <p className="line-clamp-4 text-center text-xs leading-relaxed text-white sm:text-sm">
+                          {p.description}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-3">
+                    <p className="truncate text-sm font-semibold text-ink group-hover:text-rose-deep">
+                      {p.name}
+                    </p>
+                    <div className="mt-1 flex items-center justify-between">
+                      <span className="text-sm font-bold text-ink">
+                        ₹{formatPrice(p.price)}
+                      </span>
+                      <span className="text-xs font-semibold text-rose-deep">Order Now →</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features */}
       <section className="bg-gradient-to-br from-blush-50 via-cream-50 to-champagne-100 py-24">
@@ -227,78 +313,6 @@ export default function Home() {
                   ))}
                 </ul>
               </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Products */}
-      {featured.length > 0 && (
-        <section className="py-24">
-          <div className="mx-auto max-w-7xl px-4">
-            <h2 className="mb-12 text-center font-serif text-4xl font-black text-ink sm:text-5xl">
-              Bestsellers
-            </h2>
-            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {featured.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/products/${p.id}`}
-                  className="group overflow-hidden rounded-lg border border-cream-200 bg-white transition-colors hover:border-rose-deep"
-                >
-                  <div className="aspect-[3/4] overflow-hidden bg-blush-50">
-                    {p.image_url ? (
-                      <img
-                        src={p.image_url}
-                        alt={p.name}
-                        loading="lazy"
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-blush-300">🎁</div>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <p className="truncate text-sm font-semibold text-ink">{p.name}</p>
-                    <p className="font-bold text-rose-deep">₹{formatPrice(p.price)}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CTA */}
-      <section className="relative overflow-hidden py-24">
-        <div className="absolute inset-0 bg-gradient-to-br from-rose-deep via-rose-deep-700 to-rose-deep-800" />
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative z-10 mx-auto max-w-4xl px-4 text-center text-white">
-          <p className="mb-4 text-lg font-semibold text-blush-200">Ready to Create Magic?</p>
-          <h2 className="mb-6 font-serif text-4xl font-black sm:text-6xl">
-            Spread Joy &amp; Happiness
-          </h2>
-          <p className="mx-auto mb-10 max-w-2xl text-xl leading-relaxed text-blush-100">
-            Transform your special moments into unforgettable memories with our exclusive collection
-            of premium hampers.
-          </p>
-          <Link
-            href="/products"
-            className="inline-block rounded-full bg-white px-8 py-3 text-lg font-bold text-rose-deep transition hover:bg-blush-50"
-          >
-            🛍️ Start Shopping
-          </Link>
-          <div className="mt-12 grid grid-cols-2 gap-8 text-blush-100 md:grid-cols-4">
-            {[
-              { n: "100+", l: "Happy Customers" },
-              { n: "200+", l: "Unique Designs" },
-              { n: "24/7", l: "Support" },
-              { n: "100%", l: "Satisfaction" },
-            ].map((s) => (
-              <div key={s.l} className="text-center">
-                <p className="mb-1 text-3xl font-black text-white">{s.n}</p>
-                <p className="text-sm font-medium">{s.l}</p>
-              </div>
             ))}
           </div>
         </div>
