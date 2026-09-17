@@ -5,6 +5,8 @@ import { useState } from "react";
 import type { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/types";
 import OrderModal from "@/components/OrderModal";
+import ProductCard from "@/components/ProductCard";
+import { useCart } from "@/lib/cart-context";
 
 export default function DetailClient({
   product,
@@ -14,6 +16,8 @@ export default function DetailClient({
   related: Product[];
 }) {
   const [orderOpen, setOrderOpen] = useState(false);
+  const [qty, setQty] = useState(1);
+  const { add } = useCart();
 
   return (
     <main className="min-h-screen bg-cream-50">
@@ -51,7 +55,9 @@ export default function DetailClient({
 
               <div className="border-y border-cream-200 py-4">
                 <div className="flex items-center space-x-3">
-                  <span className="text-4xl font-bold text-ink">₹{formatPrice(product.price)}</span>
+                  <span className="text-4xl font-bold text-ink">
+                    ₹{formatPrice(Number(product.price))}
+                  </span>
                 </div>
                 <p className="mt-2 text-sm text-ink-soft">Inclusive of all taxes</p>
               </div>
@@ -61,12 +67,41 @@ export default function DetailClient({
                 <p className="leading-relaxed text-ink-soft">{product.description}</p>
               </div>
 
-              <button
-                onClick={() => setOrderOpen(true)}
-                className="w-full max-w-xs rounded-lg bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-3 text-base font-bold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
-              >
-                BUY NOW
-              </button>
+              <div className="flex max-w-md items-center gap-3">
+                <span className="text-sm font-semibold text-ink">Qty</span>
+                <button
+                  type="button"
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  aria-label="Decrease quantity"
+                  className="h-10 w-10 rounded-lg border-2 border-cream-200 text-xl font-bold text-ink transition-all duration-150 hover:border-rose-deep hover:text-rose-deep active:scale-90"
+                >
+                  -
+                </button>
+                <span className="w-6 text-center text-lg font-bold text-ink">{qty}</span>
+                <button
+                  type="button"
+                  onClick={() => setQty(Math.min(99, qty + 1))}
+                  aria-label="Increase quantity"
+                  className="h-10 w-10 rounded-lg border-2 border-cream-200 text-xl font-bold text-ink transition-all duration-150 hover:border-rose-deep hover:text-rose-deep active:scale-90"
+                >
+                  +
+                </button>
+              </div>
+
+              <div className="flex w-full max-w-md flex-col gap-3 sm:flex-row">
+                <button
+                  onClick={() => add(product, qty)}
+                  className="flex-1 rounded-lg border-2 border-rose-deep px-6 py-3 text-base font-bold text-rose-deep transition-all duration-200 hover:-translate-y-0.5 hover:bg-blush-50 hover:shadow-md active:translate-y-0 active:scale-[0.98]"
+                >
+                  Add to Cart
+                </button>
+                <button
+                  onClick={() => setOrderOpen(true)}
+                  className="flex-1 rounded-lg bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-3 text-base font-bold text-white shadow-md transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl hover:brightness-110 active:translate-y-0 active:scale-[0.98]"
+                >
+                  BUY NOW
+                </button>
+              </div>
 
               <div className="grid grid-cols-2 gap-3 text-sm text-ink-soft">
                 <div className="flex items-center space-x-2">
@@ -114,41 +149,24 @@ export default function DetailClient({
 
         {related.length > 0 && (
           <div className="mt-12">
-            <h2 className="mb-8 text-center font-serif text-2xl font-bold text-ink">
+            <h2 className="mb-2 text-center font-serif text-2xl font-bold text-ink">
               Customers Also Bought
             </h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <p className="mb-6 text-center text-sm text-ink-soft">
+              Beautiful hampers others loved with this one
+            </p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
               {related.map((rp) => (
-                <Link
-                  key={rp.id}
-                  href={`/products/${rp.id}`}
-                  className="group rounded-xl border-2 border-cream-100 bg-white transition hover:border-blush-300"
-                >
-                  <div className="aspect-square overflow-hidden rounded-t-xl bg-cream-50">
-                    {rp.image_url ? (
-                      <img
-                        src={rp.image_url}
-                        alt={rp.name}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-blush-300">🎁</div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="mb-2 line-clamp-2 h-10 text-sm font-semibold text-ink">
-                      {rp.name}
-                    </h3>
-                    <span className="text-lg font-bold text-ink">₹{formatPrice(rp.price)}</span>
-                  </div>
-                </Link>
+                <ProductCard key={rp.id} product={rp} />
               ))}
             </div>
           </div>
         )}
       </div>
 
-      {orderOpen && <OrderModal product={product} onClose={() => setOrderOpen(false)} />}
+      {orderOpen && (
+        <OrderModal product={product} initialQuantity={qty} onClose={() => setOrderOpen(false)} />
+      )}
     </main>
   );
 }
