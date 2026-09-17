@@ -9,10 +9,14 @@ create table if not exists public.products (
   name text not null,
   description text not null default '',
   price numeric(12, 2) not null default 0,
+  listing_price numeric(12, 2),
   count_in_stock integer not null default 10,
   image_url text,
   created_at timestamptz not null default now()
 );
+
+-- Migration for existing databases (safe to re-run)
+alter table public.products add column if not exists listing_price numeric(12, 2);
 
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),

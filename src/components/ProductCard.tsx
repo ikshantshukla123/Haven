@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Product } from "@/lib/types";
-import { formatPrice } from "@/lib/types";
+import { discountPct, formatPrice, listingPrice } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 
 export default function ProductCard({ product }: { product: Product }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mrp = listingPrice(product);
+  const pct = discountPct(product);
 
   useEffect(() => {
     return () => {
@@ -48,14 +50,26 @@ export default function ProductCard({ product }: { product: Product }) {
               </p>
             </div>
           )}
+          {pct !== null && (
+            <span className="absolute left-1.5 top-1.5 rounded-full bg-green-600 px-1.5 py-0.5 text-[10px] font-bold text-white shadow">
+              {pct}% OFF
+            </span>
+          )}
         </div>
         <div className="p-2">
           <h3 className="truncate text-[13px] font-semibold text-ink group-hover:text-rose-deep">
             {product.name}
           </h3>
-          <div className="mt-0.5 flex items-center justify-between">
-            <span className="text-[13px] font-bold text-ink">
-              ₹{formatPrice(Number(product.price))}
+          <div className="mt-0.5 flex items-center justify-between gap-1">
+            <span className="flex min-w-0 items-baseline gap-1">
+              <span className="text-[13px] font-bold text-ink">
+                ₹{formatPrice(Number(product.price))}
+              </span>
+              {mrp !== null && (
+                <s className="truncate text-[10px] font-medium text-ink-soft">
+                  ₹{formatPrice(mrp)}
+                </s>
+              )}
             </span>
             <span className="text-[11px] font-semibold text-rose-deep">
               <span className="underline-offset-2 decoration-rose-deep decoration-1 group-hover:underline">

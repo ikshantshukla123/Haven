@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/lib/types";
-import { formatPrice } from "@/lib/types";
+import { discountPct, formatPrice, listingPrice } from "@/lib/types";
 import OrderModal from "@/components/OrderModal";
 import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/lib/cart-context";
@@ -18,6 +18,8 @@ export default function DetailClient({
   const [orderOpen, setOrderOpen] = useState(false);
   const [qty, setQty] = useState(1);
   const { add } = useCart();
+  const mrp = listingPrice(product);
+  const pct = discountPct(product);
 
   return (
     <main className="min-h-screen bg-cream-50">
@@ -54,11 +56,24 @@ export default function DetailClient({
               <h1 className="font-serif text-3xl font-bold text-ink">{product.name}</h1>
 
               <div className="border-y border-cream-200 py-4">
-                <div className="flex items-center space-x-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className="text-4xl font-bold text-ink">
                     ₹{formatPrice(Number(product.price))}
                   </span>
+                  {mrp !== null && (
+                    <s className="text-xl text-ink-soft">₹{formatPrice(mrp)}</s>
+                  )}
+                  {pct !== null && (
+                    <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-bold text-green-700">
+                      {pct}% OFF
+                    </span>
+                  )}
                 </div>
+                {mrp !== null && (
+                  <p className="mt-1 text-sm font-semibold text-green-700">
+                    You save ₹{formatPrice(mrp - Number(product.price))}
+                  </p>
+                )}
                 <p className="mt-2 text-sm text-ink-soft">Inclusive of all taxes</p>
               </div>
 

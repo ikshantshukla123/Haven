@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { GALLERY, HERO_IMAGES, galleryUrl } from "@/lib/site";
 import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/lib/types";
-import { formatPrice } from "@/lib/types";
+import { discountPct, formatPrice, listingPrice } from "@/lib/types";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 40 },
@@ -221,7 +221,10 @@ export default function Home() {
               Bestsellers
             </h2>
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-              {featured.map((p) => (
+              {featured.map((p) => {
+                const mrp = listingPrice(p);
+                const pct = discountPct(p);
+                return (
                 <Link
                   key={p.id}
                   href={`/products/${p.id}`}
@@ -245,20 +248,33 @@ export default function Home() {
                         </p>
                       </div>
                     )}
+                    {pct !== null && (
+                      <span className="absolute left-2 top-2 rounded-full bg-green-600 px-2 py-0.5 text-[10px] font-bold text-white shadow">
+                        {pct}% OFF
+                      </span>
+                    )}
                   </div>
                   <div className="p-3">
                     <p className="truncate text-sm font-semibold text-ink group-hover:text-rose-deep">
                       {p.name}
                     </p>
-                    <div className="mt-1 flex items-center justify-between">
-                      <span className="text-sm font-bold text-ink">
-                        ₹{formatPrice(p.price)}
+                    <div className="mt-1 flex items-center justify-between gap-1">
+                      <span className="flex min-w-0 items-baseline gap-1">
+                        <span className="text-sm font-bold text-ink">
+                          ₹{formatPrice(Number(p.price))}
+                        </span>
+                        {mrp !== null && (
+                          <s className="truncate text-[11px] font-medium text-ink-soft">
+                            ₹{formatPrice(mrp)}
+                          </s>
+                        )}
                       </span>
-                      <span className="text-xs font-semibold text-rose-deep">Order Now →</span>
+                      <span className="shrink-0 text-xs font-semibold text-rose-deep">Order Now →</span>
                     </div>
                   </div>
                 </Link>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>

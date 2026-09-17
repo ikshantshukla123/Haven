@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { ContactMessage, Order, Product } from "@/lib/types";
-import { formatPrice } from "@/lib/types";
+import { formatPrice, listingPrice } from "@/lib/types";
 import Spinner from "@/components/Spinner";
 
 const BUCKET = process.env.NEXT_PUBLIC_SUPABASE_BUCKET || "Hamper-haven";
@@ -15,6 +15,7 @@ const emptyForm = {
   name: "",
   description: "",
   price: "",
+  listing_price: "",
   count_in_stock: "10",
   image: null as File | null,
 };
@@ -110,7 +111,12 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.description.trim() || !form.price || !form.count_in_stock) {
-      return setError("All fields are required");
+      return setError("All fields except listing price are required");
+    }
+    const listingNum =
+      form.listing_price.trim() === "" ? null : parseFloat(form.listing_price);
+    if (listingNum !== null && (!Number.isFinite(listingNum) || listingNum < 0)) {
+      return setError("Listing price must be a positive number or left empty");
     }
 
     setSaving(true);
@@ -135,6 +141,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
       name: form.name.trim(),
       description: form.description.trim(),
       price: parseFloat(form.price),
+      listing_price: listingNum,
       count_in_stock: parseInt(form.count_in_stock, 10),
       ...(imageUrl ? { image_url: imageUrl } : {}),
     };
@@ -161,6 +168,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
       name: p.name,
       description: p.description,
       price: String(p.price),
+      listing_price: p.listing_price === null || p.listing_price === undefined ? "" : String(p.listing_price),
       count_in_stock: String(p.count_in_stock ?? 10),
       image: null,
     });
@@ -309,7 +317,14 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-4 font-bold text-rose-deep">₹{formatPrice(p.price)}</td>
+                          <td className="whitespace-nowrap px-4 py-4">
+                            <span className="font-bold text-rose-deep">₹{formatPrice(Number(p.price))}</span>
+                            {listingPrice(p) !== null && (
+                              <span className="ml-2 text-xs text-ink-soft line-through">
+                                ₹{formatPrice(listingPrice(p)!)}
+                              </span>
+                            )}
+                          </td>
                           <td className="px-4 py-4">
                             <span className="rounded-full bg-cream-100 px-3 py-1 text-xs font-semibold text-ink-soft">
                               {p.count_in_stock ?? 0} in stock
@@ -370,7 +385,7 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                       />
                     </div>
                     <div>
-                      <label className="mb-2 block text-sm font-semibold text-ink">Price (₹) *</label>
+                      <label className="mb-2 block text-sm font-semibold text-ink">Original Price (₹) *</label>
                       <input
                         type="number"
                         min="0"
@@ -408,6 +423,25 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-semibold text-ink">
+                        Listing Price (₹) <span className="font-normal text-ink-soft">(optional)</span>
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={form.listing_price}
+                        onChange={(e) => setForm({ ...form, listing_price: e.target.value })}
+                        placeholder="MRP, e.g. 1499"
+                        className={inputClass}
+                      />
+                      <p className="mt-1 text-xs text-ink-soft">
+                        Shown cut on the site only if higher than the original price.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                      <label className="mb-2 block text-sm font-semibold text-ink">
                         Product Image {!editing && "*"}
                       </label>
                       <input
@@ -426,7 +460,6 @@ export default function AdminPanelClient({ userEmail }: { userEmail: string }) {
                         <p className="mt-2 text-sm text-ink-soft">Leave empty to keep the current image</p>
                       )}
                       <p className="mt-1 text-xs text-ink-soft">Max 2MB • WebP or PNG only</p>
-                    </div>
                   </div>
 
                   <button
