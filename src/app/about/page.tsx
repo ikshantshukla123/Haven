@@ -7,7 +7,7 @@ export default function AboutUsPage() {
         <div className="absolute inset-0 bg-black/10" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
           <h1 className="mb-6 font-serif text-5xl font-black sm:text-6xl">
-            About Hamper Heaven
+            About Hamper Haven
           </h1>
           <p className="mx-auto max-w-3xl text-xl leading-relaxed text-blush-100">
             Creating moments of joy through carefully curated gift hampers that speak from the
@@ -28,7 +28,7 @@ export default function AboutUsPage() {
             </div>
             <div className="space-y-4 leading-relaxed text-ink-soft">
               <p>
-                At Hamper Heaven, we believe that every gift tells a story. Founded with a passion
+                At Hamper Haven, we believe that every gift tells a story. Founded with a passion
                 for spreading joy and celebrating life&apos;s special moments, we specialize in
                 creating thoughtfully curated hampers that bring smiles to your loved ones.
               </p>
@@ -49,7 +49,7 @@ export default function AboutUsPage() {
               <h2 className="font-serif text-3xl font-bold text-ink">Our Mission</h2>
             </div>
             <p className="mb-6 leading-relaxed text-ink-soft">
-              At Hamper Heaven, we don&apos;t just sell hampers &ndash; we create memories. Because
+              At Hamper Haven, we don&apos;t just sell hampers &ndash; we create memories. Because
               a perfect gift isn&apos;t about the price tag, it&apos;s about the thought, care, and
               happiness it brings.
             </p>
@@ -81,7 +81,7 @@ export default function AboutUsPage() {
           <div className="absolute -bottom-24 -left-24 h-48 w-48 rounded-full bg-white/10" />
           <div className="relative mb-12 text-center">
             <h2 className="mb-4 font-serif text-4xl font-black">
-              Why Choose Hamper Heaven?
+              Why Choose Hamper Haven?
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-blush-100">
               We go above and beyond to make every gift-giving experience special
@@ -123,7 +123,7 @@ export default function AboutUsPage() {
           <div className="mb-12 text-center">
             <h2 className="mb-4 font-serif text-4xl font-black text-ink">Our Values</h2>
             <p className="mx-auto max-w-2xl text-lg text-ink-soft">
-              The principles that guide everything we do at Hamper Heaven
+              The principles that guide everything we do at Hamper Haven
             </p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -148,10 +148,10 @@ export default function AboutUsPage() {
           <div className="mb-12 text-center">
             <h2 className="mb-4 font-serif text-4xl font-black text-ink">Meet Our Team</h2>
             <p className="text-lg text-ink-soft">
-              The passionate individuals behind Hamper Heaven&apos;s success
+              The passionate individuals behind Hamper Haven&apos;s success
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="mx-auto grid max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2">
             {TEAM.map((member) => (
               <div
                 key={member.name}
@@ -162,16 +162,20 @@ export default function AboutUsPage() {
                     <img
                       src={member.image}
                       alt={member.name}
-                      className="h-full w-full object-cover object-top"
+                      style={{ objectPosition: member.position }}
+                      className="h-full w-full object-cover"
                     />
                   </div>
                 </div>
-                <h3 className="mb-3 text-xl font-bold text-ink">{member.name}</h3>
+                <h3 className="mb-1 text-xl font-bold text-ink">{member.name}</h3>
+                <p className="mb-3 text-sm font-semibold tracking-wide text-rose-deep uppercase">
+                  {member.role}
+                </p>
                 <a
                   href={member.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-2 font-semibold text-white transition hover:from-rose-deep-600 hover:to-rose-deep-700"
+                  className="inline-flex items-center justify-center space-x-2 rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-2 font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-lg hover:brightness-110 active:scale-95"
                 >
                   <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5A4.25 4.25 0 0 0 20.5 16.25v-8.5A4.25 4.25 0 0 0 16.25 3.5zm4.25 2.25a5.25 5.25 0 1 1-5.25 5.25a5.25 5.25 0 0 1 5.25-5.25zm0 1.5a3.75 3.75 0 1 0 3.75 3.75a3.75 3.75 0 0 0-3.75-3.75zm5.25.75a1 1 0 1 1-2 0a1 1 0 0 1 2 0z" />
