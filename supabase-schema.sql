@@ -1,4 +1,4 @@
--- Hamper Heaven — Supabase schema
+-- Hamper Haven — Supabase schema
 -- Paste this into Supabase Dashboard -> SQL Editor -> New query -> Run
 -- Run once. Safe to re-run (uses IF NOT EXISTS).
 
@@ -21,10 +21,18 @@ create table if not exists public.orders (
   user_name text not null,
   user_mobile text not null,
   custom_details text,
+  address text,
+  city text,
+  pincode text,
   is_custom boolean not null default false,
   quantity integer not null default 1,
   created_at timestamptz not null default now()
 );
+
+-- Migration for existing databases (safe to re-run)
+alter table public.orders add column if not exists address text;
+alter table public.orders add column if not exists city text;
+alter table public.orders add column if not exists pincode text;
 
 create table if not exists public.contact_messages (
   id uuid primary key default gen_random_uuid(),

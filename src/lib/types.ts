@@ -15,6 +15,9 @@ export type Order = {
   user_name: string;
   user_mobile: string;
   custom_details: string | null;
+  address?: string | null;
+  city?: string | null;
+  pincode?: string | null;
   is_custom: boolean;
   quantity: number;
   created_at: string;
