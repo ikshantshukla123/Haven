@@ -8,7 +8,7 @@ const AboutUs = () => {
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-black mb-6 stylish-font">
-            About <span className="text-yellow-200">Hamper Heaven</span>
+            About <span className="text-yellow-200">Hamper Haven</span>
           </h1>
           <p className="text-xl md:text-2xl text-pink-100 max-w-3xl mx-auto leading-relaxed">
             Creating moments of joy through carefully curated gift hampers that speak from the heart
@@ -31,7 +31,7 @@ const AboutUs = () => {
             </div>
             <div className="space-y-4 text-gray-700 leading-relaxed">
               <p>
-                At Hamper Heaven, we believe that every gift tells a story. Founded with a passion for 
+                At Hamper Haven, we believe that every gift tells a story. Founded with a passion for 
                 spreading joy and celebrating life's special moments, we specialize in creating thoughtfully 
                 curated hampers that bring smiles to your loved ones.
               </p>
@@ -53,7 +53,7 @@ const AboutUs = () => {
               <h2 className="text-3xl font-bold text-gray-900">Our Mission</h2>
             </div>
             <p className="text-gray-700 mb-6 leading-relaxed">
-              At Hamper Heaven, we don't just sell hampers – we create memories. Because a perfect gift 
+              At Hamper Haven, we don't just sell hampers – we create memories. Because a perfect gift 
               isn't about the price tag, it's about the thought, care, and happiness it brings.
             </p>
             
@@ -95,7 +95,7 @@ const AboutUs = () => {
           
           <div className="relative text-center mb-12">
             <h2 className="text-4xl font-black mb-4 stylish-font">
-              Why Choose <span className="text-yellow-200">Hamper Heaven?</span>
+              Why Choose <span className="text-yellow-200">Hamper Haven?</span>
             </h2>
             <p className="text-pink-100 text-lg max-w-2xl mx-auto">
               We go above and beyond to make every gift-giving experience special
@@ -136,7 +136,7 @@ const AboutUs = () => {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-gray-900 mb-4 stylish-font">Our Values</h2>
             <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-              The principles that guide everything we do at Hamper Heaven
+              The principles that guide everything we do at Hamper Haven
             </p>
           </div>
 
@@ -179,7 +179,7 @@ const AboutUs = () => {
           <div className="text-center mb-12">
             <h2 className="text-4xl font-black text-gray-900 mb-4 stylish-font">Meet Our Team</h2>
             <p className="text-gray-600 text-lg">
-              The passionate individuals behind Hamper Heaven's success
+              The passionate individuals behind Hamper Haven's success
             </p>
           </div>
 

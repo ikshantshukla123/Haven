@@ -136,7 +136,7 @@ const Home = () => {
             </span>
             <br />
             <span className="bg-gradient-to-r from-rose-100 to-pink-200 bg-clip-text text-transparent">
-              Heaven
+              Haven
             </span>
           </motion.h1>
           

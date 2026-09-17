@@ -95,7 +95,7 @@ const Navbar = () => {
               >
                 <img
                   src="/abhi.jpeg"
-                  alt="Hamper Heaven Logo"
+                  alt="Hamper Haven Logo"
                   className="h-14 w-14 rounded-2xl shadow-2xl border-4 border-rose-300/50 
                              group-hover:border-rose-400/70 transition-all duration-500"
                 />
@@ -111,7 +111,7 @@ const Navbar = () => {
                              bg-clip-text text-transparent"
                   whileHover={{ scale: 1.02 }}
                 >
-                  Hamper Heaven
+                  Hamper Haven
                 </motion.h1>
                 <p className="text-xs text-rose-500 font-medium mt-1">
                   Premium Gift Experiences

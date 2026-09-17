@@ -1,10 +1,10 @@
-# Hamper Heaven
+# Hamper Haven
 
 LIVE: https://haven-snowy.vercel.app/
 
 ## Overview
 
-Hamper Heaven is a gifting platform for a gift hamper brand. Customers browse and
+Hamper Haven is a gifting platform for a gift hamper brand. Customers browse and
 order curated or custom gift hampers without logging in. Only the admin logs in to
 manage products, view/delete orders, and read contact messages.
 
@@ -93,4 +93,4 @@ Import the repo into Vercel and set the four environment variables above. The
 
 ---
 
-Enjoy gifting with Hamper Heaven!
+Enjoy gifting with Hamper Haven!

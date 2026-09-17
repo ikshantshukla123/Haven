@@ -13,14 +13,14 @@ const Footer = () => {
               <div className="relative">
                 <img
                   src="/abhi.jpeg"
-                  alt="Hamper Heaven Logo"
+                  alt="Hamper Haven Logo"
                   className="h-14 w-14 rounded-2xl shadow-lg border-2 border-rose-300/50"
                 />
                 <div className="absolute -inset-1 rounded-2xl border border-rose-400/30 animate-pulse"></div>
               </div>
               <div>
                 <h3 className="text-xl font-bold bg-gradient-to-r from-rose-200 to-pink-200 bg-clip-text text-transparent">
-                  Hamper Heaven
+                  Hamper Haven
                 </h3>
                 <p className="text-rose-200 text-sm">Premium Gift Experiences</p>
               </div>
@@ -130,7 +130,7 @@ const Footer = () => {
         <div className="pt-6 border-t border-rose-700/50">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-rose-200 text-sm">
-              &copy; {new Date().getFullYear()} Hamper Heaven. All Rights Reserved.
+              &copy; {new Date().getFullYear()} Hamper Haven. All Rights Reserved.
             </p>
             <div className="flex space-x-6 text-rose-200 text-sm">
               <a href="/privacy" className="hover:text-white transition-colors">Privacy Policy</a>
