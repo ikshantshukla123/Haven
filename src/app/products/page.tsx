@@ -16,6 +16,11 @@ export default function ProductsPage() {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
   const [loadingMore, setLoadingMore] = useState(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+  // Ref mirror of loadingMore for use inside the observer callback, plus the
+  // pending batch timer — kept in refs so scheduling a batch never cancels
+  // itself via effect cleanup.
+  const loadingMoreRef = useRef(false);
+  const batchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -58,6 +63,9 @@ export default function ProductsPage() {
   }, [products, search, sortBy]);
 
   const resetPagination = () => {
+    if (batchTimerRef.current) clearTimeout(batchTimerRef.current);
+    batchTimerRef.current = null;
+    loadingMoreRef.current = false;
     setVisibleCount(ITEMS_PER_BATCH);
     setLoadingMore(false);
   };
@@ -66,22 +74,26 @@ export default function ProductsPage() {
   const hasMore = visibleCount < filtered.length;
 
   // Infinite scroll: slowly load the next batch when the user scrolls near the bottom.
+  // NOTE: loadingMore UI state is intentionally NOT in the deps — toggling it
+  // re-renders, and if it re-ran this effect the cleanup would clearTimeout
+  // the pending batch (endless spinner). The ref guard prevents double-scheduling.
   useEffect(() => {
     if (loading || !hasMore) return;
     const el = sentinelRef.current;
     if (!el) return;
 
-    let timer: ReturnType<typeof setTimeout> | null = null;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !loadingMore) {
+        if (entries[0].isIntersecting && !loadingMoreRef.current) {
+          loadingMoreRef.current = true;
           setLoadingMore(true);
           // Small delay so batches appear gradually instead of all at once.
-          timer = setTimeout(() => {
+          batchTimerRef.current = setTimeout(() => {
+            batchTimerRef.current = null;
             setVisibleCount((v) => Math.min(v + ITEMS_PER_BATCH, filtered.length));
+            loadingMoreRef.current = false;
             setLoadingMore(false);
           }, 600);
-          observer.unobserve(el);
         }
       },
       { root: null, rootMargin: "600px", threshold: 0 },
@@ -90,9 +102,13 @@ export default function ProductsPage() {
     observer.observe(el);
     return () => {
       observer.disconnect();
-      if (timer) clearTimeout(timer);
+      if (batchTimerRef.current) {
+        clearTimeout(batchTimerRef.current);
+        batchTimerRef.current = null;
+        loadingMoreRef.current = false;
+      }
     };
-  }, [loading, hasMore, loadingMore, filtered.length]);
+  }, [loading, hasMore, filtered.length]);
 
   return (
     <main className="min-h-screen bg-cream-50">
