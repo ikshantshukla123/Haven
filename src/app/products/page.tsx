@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Product } from "@/lib/types";
 import ProductCard from "@/components/ProductCard";
@@ -14,6 +14,8 @@ export default function ProductsPage() {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("name");
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_BATCH);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -55,9 +57,42 @@ export default function ProductsPage() {
     return sorted;
   }, [products, search, sortBy]);
 
-  const resetPagination = () => setVisibleCount(ITEMS_PER_BATCH);
+  const resetPagination = () => {
+    setVisibleCount(ITEMS_PER_BATCH);
+    setLoadingMore(false);
+  };
 
   const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
+  // Infinite scroll: slowly load the next batch when the user scrolls near the bottom.
+  useEffect(() => {
+    if (loading || !hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loadingMore) {
+          setLoadingMore(true);
+          // Small delay so batches appear gradually instead of all at once.
+          timer = setTimeout(() => {
+            setVisibleCount((v) => Math.min(v + ITEMS_PER_BATCH, filtered.length));
+            setLoadingMore(false);
+          }, 600);
+          observer.unobserve(el);
+        }
+      },
+      { root: null, rootMargin: "600px", threshold: 0 },
+    );
+
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      if (timer) clearTimeout(timer);
+    };
+  }, [loading, hasMore, loadingMore, filtered.length]);
 
   return (
     <main className="min-h-screen bg-cream-50">
@@ -124,7 +159,7 @@ export default function ProductsPage() {
             {search && (
               <button
                 onClick={() => setSearch("")}
-                className="rounded-full bg-rose-deep px-4 py-2 text-sm font-semibold text-white hover:bg-rose-deep-600"
+                className="rounded-full bg-rose-deep px-4 py-2 text-sm font-semibold text-white transition-all duration-200 hover:-translate-y-px hover:bg-rose-deep-600 hover:shadow-md active:translate-y-0 active:scale-95"
               >
                 Clear Search
               </button>
@@ -137,21 +172,27 @@ export default function ProductsPage() {
             </p>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
               {visible.map((product) => (
-                <div key={product.id} className="group relative">
-                  <ProductCard product={product} />
-                </div>
+                <ProductCard key={product.id} product={product} />
               ))}
             </div>
 
-            {visibleCount < filtered.length && (
-              <div className="mt-8 text-center">
-                <button
-                  onClick={() => setVisibleCount((v) => v + ITEMS_PER_BATCH)}
-                  className="rounded-full bg-gradient-to-r from-rose-deep to-rose-deep-600 px-6 py-2 text-sm font-semibold text-white hover:from-rose-deep-600 hover:to-rose-deep-700"
-                >
-                  Load More
-                </button>
+            {hasMore ? (
+              <div ref={sentinelRef} className="mt-8 flex flex-col items-center gap-3 py-4">
+                {loadingMore ? (
+                  <>
+                    <div className="h-10 w-10 animate-spin rounded-full border-4 border-blush-200 border-t-rose-deep" />
+                    <p className="text-sm font-medium text-ink-soft">Loading more...</p>
+                  </>
+                ) : (
+                  <p className="text-sm font-medium text-ink-soft">Scroll for more...</p>
+                )}
               </div>
+            ) : (
+              filtered.length > ITEMS_PER_BATCH && (
+                <p className="mt-8 text-center text-sm font-medium text-ink-soft">
+                  You&apos;ve seen all {filtered.length} products
+                </p>
+              )
             )}
           </>
         )}
